@@ -10,6 +10,7 @@ import {
 import { Popover } from '@actual-app/components/popover';
 import { styles } from '@actual-app/components/styles';
 import { theme } from '@actual-app/components/theme';
+import { radius } from '@actual-app/components/tokens';
 import { View } from '@actual-app/components/view';
 import * as monthUtils from '@actual-app/core/shared/months';
 import { css } from '@emotion/css';
@@ -71,7 +72,7 @@ export const BudgetSummary = memo(({ month }: BudgetSummaryProps) => {
             ? theme.budgetCurrentMonth
             : theme.budgetOtherMonth,
         boxShadow: styles.cardShadow,
-        borderRadius: 6,
+        borderRadius: 16,
         marginLeft: 0,
         marginRight: 0,
         marginTop: 5,
@@ -267,24 +268,27 @@ export const BudgetSummary = memo(({ month }: BudgetSummaryProps) => {
           </View>
         ) : (
           <>
-            <TotalsList
-              prevMonthName={prevMonthName}
+            <View
               style={{
-                padding: '5px 0',
-                marginTop: 17,
+                margin: '16px 16px 4px',
+                padding: '16px 0',
+                borderRadius: radius.md,
                 backgroundColor: theme.budgetHeaderCurrentMonth,
-                borderTopWidth: 1,
-                borderBottomWidth: 1,
-                borderColor: theme.tableBorder,
               }}
-            />
-            <View style={{ margin: '23px 0' }}>
+            >
               <ToBudget
                 prevMonthName={prevMonthName}
                 month={month}
                 onBudgetAction={onBudgetAction}
               />
             </View>
+            <TotalsList
+              prevMonthName={prevMonthName}
+              style={{
+                padding: '12px 0 18px',
+                color: theme.pageTextLight,
+              }}
+            />
           </>
         )}
       </SheetNameProvider>

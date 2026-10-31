@@ -12,6 +12,7 @@ import { Popover } from '@actual-app/components/popover';
 import { SpaceBetween } from '@actual-app/components/space-between';
 import { styles } from '@actual-app/components/styles';
 import { theme } from '@actual-app/components/theme';
+import { radius } from '@actual-app/components/tokens';
 import { View } from '@actual-app/components/view';
 import * as monthUtils from '@actual-app/core/shared/months';
 import { css } from '@emotion/css';
@@ -68,7 +69,7 @@ export function BudgetSummary({ month }: BudgetSummaryProps) {
             ? theme.budgetCurrentMonth
             : theme.budgetOtherMonth,
         boxShadow: styles.cardShadow,
-        borderRadius: 6,
+        borderRadius: 16,
         marginLeft: 0,
         marginRight: 0,
         marginTop: 5,
@@ -233,16 +234,27 @@ export function BudgetSummary({ month }: BudgetSummaryProps) {
         </View>
 
         {!collapsed && (
+          <View
+            style={{
+              margin: '16px 16px 4px',
+              padding: '16px 0',
+              borderRadius: radius.md,
+              backgroundColor: theme.budgetHeaderCurrentMonth,
+            }}
+          >
+            <Saved projected={month >= currentMonth} />
+          </View>
+        )}
+
+        {!collapsed && (
           <SpaceBetween
             direction="vertical"
             gap={10}
             style={{
               alignSelf: 'center',
               alignItems: 'flex-start',
-              backgroundColor: theme.budgetHeaderCurrentMonth,
-              borderRadius: 4,
-              padding: '10px 15px',
-              marginTop: 13,
+              color: theme.pageTextLight,
+              padding: '12px 15px 18px',
             }}
           >
             <IncomeTotal />
@@ -262,12 +274,7 @@ export function BudgetSummary({ month }: BudgetSummaryProps) {
           >
             <Saved projected={month >= currentMonth} />
           </View>
-        ) : (
-          <Saved
-            projected={month >= currentMonth}
-            style={{ marginTop: 13, marginBottom: 20 }}
-          />
-        )}
+        ) : null}
       </SheetNameProvider>
     </View>
   );

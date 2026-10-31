@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import type { CSSProperties } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { Button } from '@actual-app/components/button';
 import { useResponsive } from '@actual-app/components/hooks/useResponsive';
@@ -19,6 +19,8 @@ import type {
 } from '@actual-app/core/types/models';
 import { AutoTextSize } from 'auto-text-size';
 
+import { BalanceChipLegend } from '#components/budget/BalanceChipLegend';
+import { HelpHint } from '#components/common/HelpHint';
 import { MOBILE_NAV_HEIGHT } from '#components/mobile/MobileNavTabs';
 import { PullToRefresh } from '#components/mobile/PullToRefresh';
 import { PrivacyFilter } from '#components/PrivacyFilter';
@@ -627,7 +629,7 @@ function BudgetTableHeader({
           {({ type, value }) => (
             <View style={{ width: columnWidth }}>
               <View style={{ flex: 1, alignItems: 'flex-end !important' }}>
-                <View>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <AutoTextSize
                     as={Label}
                     minFontSizePx={6}
@@ -636,6 +638,41 @@ function BudgetTableHeader({
                     title={t('Balance')}
                     style={{ color: theme.formInputText }}
                   />
+                  <HelpHint label={t('Budget table help')}>
+                    <BalanceChipLegend
+                      intro={
+                        <View style={{ gap: 6 }}>
+                          <Text>
+                            {budgetType === 'tracking' ? (
+                              <Trans>
+                                Budgeted: your spending target for the month.
+                              </Trans>
+                            ) : (
+                              <Trans>
+                                Budgeted: money assigned to the category this
+                                month.
+                              </Trans>
+                            )}
+                          </Text>
+                          <Text>
+                            <Trans>
+                              Spent: what you spent this month. The thin bar
+                              under each category shows how much is used: gray
+                              is on track, yellow is above 85%, red is
+                              overspent. Tap the Budgeted or Spent header to
+                              switch columns.
+                            </Trans>
+                          </Text>
+                          <Text>
+                            <Trans>
+                              Balance: what is left to spend. The chip color
+                              shows the status:
+                            </Trans>
+                          </Text>
+                        </View>
+                      }
+                    />
+                  </HelpHint>
                 </View>
                 <View>
                   <PrivacyFilter>

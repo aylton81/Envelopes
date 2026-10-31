@@ -11,6 +11,7 @@ import type {
 import { Block } from '@actual-app/components/block';
 import { styles } from '@actual-app/components/styles';
 import { theme } from '@actual-app/components/theme';
+import { radius } from '@actual-app/components/tokens';
 import { View } from '@actual-app/components/view';
 
 import { ItemContent } from './ItemContent';
@@ -65,8 +66,11 @@ export function Item({
           ...styles.mediumText,
           paddingTop: 9,
           paddingBottom: 9,
-          paddingLeft: 19 + indent,
+          paddingLeft: 10 + indent,
           paddingRight: 10,
+          marginLeft: 10,
+          marginRight: 10,
+          borderRadius: radius.md,
           textDecoration: 'none',
           color: theme.sidebarItemText,
           ...(forceHover ? hoverStyle : {}),
@@ -74,8 +78,7 @@ export function Item({
         }}
         forceActive={forceActive}
         activeStyle={{
-          borderLeft: '4px solid ' + theme.sidebarItemTextSelected,
-          paddingLeft: 19 + indent - 4,
+          backgroundColor: theme.sidebarItemBackgroundSelected,
           color: theme.sidebarItemTextSelected,
         }}
         to={to}

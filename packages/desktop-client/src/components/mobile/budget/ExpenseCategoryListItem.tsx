@@ -15,6 +15,7 @@ import * as monthUtils from '@actual-app/core/shared/months';
 import type { IntegerAmount } from '@actual-app/core/shared/util';
 import type { CategoryEntity } from '@actual-app/core/types/models';
 
+import { SpendingProgressBar } from '#components/budget/SpendingProgressBar';
 import { useCategoriesById } from '#hooks/useCategories';
 import { useFormat } from '#hooks/useFormat';
 import { useNavigate } from '#hooks/useNavigate';
@@ -148,8 +149,11 @@ function ExpenseCategoryCells({
         justifyContent: 'flex-end',
         alignItems: 'center',
         flexDirection: 'row',
+        position: 'relative',
+        alignSelf: 'stretch',
       }}
     >
+      <SpendingProgressBar spent={spent} balance={balance} />
       <View
         style={{
           ...(!show3Columns && !showBudgetedColumn && { display: 'none' }),

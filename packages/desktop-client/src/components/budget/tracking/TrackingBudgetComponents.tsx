@@ -18,9 +18,12 @@ import * as monthUtils from '@actual-app/core/shared/months';
 import { css } from '@emotion/css';
 import { t } from 'i18next';
 
+import { BalanceChipLegend } from '#components/budget/BalanceChipLegend';
 import { BalanceWithCarryover } from '#components/budget/BalanceWithCarryover';
 import { GoalStatus } from '#components/budget/GoalStatus';
+import { SpendingProgressBar } from '#components/budget/SpendingProgressBar';
 import { makeAmountGrey } from '#components/budget/util';
+import { HelpHint } from '#components/common/HelpHint';
 import { NotesButton } from '#components/NotesButton';
 import { CellValue, CellValueText } from '#components/spreadsheet/CellValue';
 import { Field, SheetCell } from '#components/table';
@@ -63,6 +66,13 @@ const headerLabelStyle: CSSProperties = {
   textAlign: 'right',
 };
 
+const labelRowStyle: CSSProperties = {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  gap: 2,
+};
+
 const cellStyle: CSSProperties = {
   color: theme.tableHeaderText,
   fontWeight: 600,
@@ -80,9 +90,17 @@ export const BudgetTotalsMonth = memo(function BudgetTotalsMonth() {
       }}
     >
       <View style={headerLabelStyle}>
-        <Text style={{ color: theme.tableHeaderText }}>
-          <Trans>Budgeted</Trans>
-        </Text>
+        <View style={labelRowStyle}>
+          <Text style={{ color: theme.tableHeaderText }}>
+            <Trans>Budgeted</Trans>
+          </Text>
+          <HelpHint>
+            <Trans>
+              Your spending target for each category this month. Tracking
+              budgets do not set money aside.
+            </Trans>
+          </HelpHint>
+        </View>
         <TrackingCellValue
           binding={trackingBudget.totalBudgetedExpense}
           type="financial"
@@ -91,17 +109,35 @@ export const BudgetTotalsMonth = memo(function BudgetTotalsMonth() {
         </TrackingCellValue>
       </View>
       <View style={headerLabelStyle}>
-        <Text style={{ color: theme.tableHeaderText }}>
-          <Trans>Spent</Trans>
-        </Text>
+        <View style={labelRowStyle}>
+          <Text style={{ color: theme.tableHeaderText }}>
+            <Trans>Spent</Trans>
+          </Text>
+          <HelpHint>
+            <Trans>
+              Total spent in this category this month. The thin bar under each
+              amount shows how much of the available money is used: gray is on
+              track, yellow is above 85%, red is overspent.
+            </Trans>
+          </HelpHint>
+        </View>
         <TrackingCellValue binding={trackingBudget.totalSpent} type="financial">
           {props => <CellValueText {...props} style={cellStyle} />}
         </TrackingCellValue>
       </View>
       <View style={headerLabelStyle}>
-        <Text style={{ color: theme.tableHeaderText }}>
-          <Trans>Balance</Trans>
-        </Text>
+        <View style={labelRowStyle}>
+          <Text style={{ color: theme.tableHeaderText }}>
+            <Trans>Balance</Trans>
+          </Text>
+          <HelpHint>
+            <BalanceChipLegend
+              intro={
+                <Trans>Target minus what you spent in each category.</Trans>
+              }
+            />
+          </HelpHint>
+        </View>
         <TrackingCellValue
           binding={trackingBudget.totalLeftover}
           type="financial"
@@ -399,7 +435,15 @@ export const CategoryMonth = memo(function CategoryMonth({
           }}
         />
       </View>
-      <Field name="spent" width="flex" style={{ textAlign: 'right' }}>
+      <Field
+        name="spent"
+        width="flex"
+        style={{ textAlign: 'right', position: 'relative' }}
+      >
+        <SpendingProgressBar
+          spent={trackingBudget.catSumAmount(category.id)}
+          balance={trackingBudget.catBalance(category.id)}
+        />
         <View
           data-testid="category-month-spent"
           onClick={() => onShowActivity(category.id, month)}

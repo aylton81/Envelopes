@@ -1,6 +1,6 @@
 import React from 'react';
 import type { CSSProperties, MouseEventHandler } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { Block } from '@actual-app/components/block';
 import { styles } from '@actual-app/components/styles';
@@ -13,6 +13,7 @@ import {
   useEnvelopeSheetName,
   useEnvelopeSheetValue,
 } from '#components/budget/envelope/EnvelopeBudgetComponents';
+import { HelpHint } from '#components/common/HelpHint';
 import { FinancialText } from '#components/FinancialText';
 import { PrivacyFilter } from '#components/PrivacyFilter';
 import { useFormat } from '#hooks/useFormat';
@@ -56,7 +57,16 @@ export function ToBudgetAmount({
 
   return (
     <View style={{ alignItems: 'center', ...style }}>
-      <Block>{isNegative ? t('Overbudgeted:') : t('To Budget:')}</Block>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+        <Block>{isNegative ? t('Overbudgeted:') : t('To Budget:')}</Block>
+        <HelpHint>
+          <Trans>
+            Money you have not assigned to a category yet. Give every dollar a
+            job until this reaches zero. A negative amount means you budgeted
+            more than you have.
+          </Trans>
+        </HelpHint>
+      </View>
       <View>
         <Tooltip
           content={
@@ -83,7 +93,7 @@ export function ToBudgetAmount({
               className={css([
                 styles.veryLargeText,
                 {
-                  fontWeight: 400,
+                  fontWeight: 600,
                   userSelect: 'none',
                   cursor: onClick ? 'pointer' : 'default',
                   color: isPositive

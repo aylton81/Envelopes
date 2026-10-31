@@ -1,7 +1,7 @@
 import { keyframes } from '@emotion/css';
 
 import { theme } from './theme';
-import { tokens } from './tokens';
+import { radius, tokens } from './tokens';
 
 // oxlint-disable-next-line typescript/no-explicit-any
 export type CSSProperties = Record<string, any>;
@@ -18,7 +18,7 @@ const shadowSheet = {
 
 export const styles: CSSProperties = {
   incomeHeaderHeight: 70,
-  cardShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+  cardShadow: '0 1px 2px rgba(16,42,67,0.06), 0 4px 16px rgba(16,42,67,0.07)',
   monthRightPadding: 5,
   menuBorderRadius: 4,
   mobileMinHeight: MOBILE_MIN_HEIGHT,
@@ -152,8 +152,8 @@ export const styles: CSSProperties = {
   tooltip: {
     padding: 5,
     ...shadowLarge,
-    borderWidth: 2,
-    borderRadius: 4,
+    borderWidth: 1,
+    borderRadius: radius.md,
     borderStyle: 'solid',
     borderColor: theme.tooltipBorder,
     backgroundColor: theme.tooltipBackground,
@@ -185,8 +185,7 @@ export const styles: CSSProperties = {
   tableContainer: {
     flex: 1,
     border: '1px solid ' + theme.tableBorder,
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 6,
+    borderRadius: radius.lg,
     overflow: 'hidden',
   },
 };

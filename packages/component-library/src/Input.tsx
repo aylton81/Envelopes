@@ -15,6 +15,7 @@ import { theme } from './theme';
 import {
   componentSizeControl,
   componentSizeText,
+  radius,
   sizeResponsiveStyles,
   type ComponentSize,
 } from './tokens';
@@ -25,7 +26,7 @@ export const baseInputStyle = {
   color: theme.formInputText,
   margin: 0,
   padding: 5,
-  borderRadius: 4,
+  borderRadius: radius.sm,
   border: '1px solid ' + theme.formInputBorder,
 };
 

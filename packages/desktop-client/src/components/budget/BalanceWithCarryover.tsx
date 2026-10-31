@@ -8,6 +8,7 @@ import type {
 
 import { SvgArrowThinRight } from '@actual-app/components/icons/v1';
 import { theme } from '@actual-app/components/theme';
+import { radius } from '@actual-app/components/tokens';
 import { View } from '@actual-app/components/view';
 import { css } from '@emotion/css';
 
@@ -113,17 +114,25 @@ export function BalanceWithCarryover({
   );
 
   const getDefaultClassName = useCallback(
-    (balanceValue: number) =>
-      css({
-        ...getBalanceAmountStyle(balanceValue),
+    (balanceValue: number) => {
+      const amountStyle = getBalanceAmountStyle(balanceValue);
+      return css({
+        ...amountStyle,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         textAlign: 'right',
+        // Non-zero balances sit in a soft pill tinted from their own color.
+        ...(balanceValue !== 0 && {
+          backgroundColor: `color-mix(in srgb, ${amountStyle.color} 12%, transparent)`,
+          borderRadius: radius.pill,
+          padding: '3px 10px',
+        }),
         ...(!isDisabled && {
           cursor: 'pointer',
           ':hover': { textDecoration: 'underline' },
         }),
-      }),
+      });
+    },
     [getBalanceAmountStyle, isDisabled],
   );
 

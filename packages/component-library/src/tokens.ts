@@ -45,10 +45,12 @@ export const spacing: Record<SpacingSize, number> = {
   xl: 24,
 };
 
-type RadiusSize = 'sm' | 'sheet' | 'pill';
+type RadiusSize = 'sm' | 'md' | 'lg' | 'sheet' | 'pill';
 
 export const radius: Record<RadiusSize, number> = {
-  sm: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
   sheet: 18,
   pill: 999,
 };

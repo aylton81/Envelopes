@@ -34,7 +34,8 @@ export const darkThemeOptions = Object.entries({
 }).map(([key, { name }]) => [key, name] as [DarkTheme, string]);
 
 export function useTheme() {
-  const [theme = 'auto', setThemePref] = useGlobalPref('theme');
+  // Dark is the default until the user picks another theme.
+  const [theme = 'dark', setThemePref] = useGlobalPref('theme');
   return [theme, setThemePref] as const;
 }
 

@@ -16,8 +16,11 @@ import { View } from '@actual-app/components/view';
 import * as monthUtils from '@actual-app/core/shared/months';
 import { css } from '@emotion/css';
 
+import { BalanceChipLegend } from '#components/budget/BalanceChipLegend';
 import { BalanceWithCarryover } from '#components/budget/BalanceWithCarryover';
+import { SpendingProgressBar } from '#components/budget/SpendingProgressBar';
 import { makeAmountGrey } from '#components/budget/util';
+import { HelpHint } from '#components/common/HelpHint';
 import { NotesButton } from '#components/NotesButton';
 import { CellValue, CellValueText } from '#components/spreadsheet/CellValue';
 import { Field, Row, SheetCell } from '#components/table';
@@ -68,6 +71,13 @@ const headerLabelStyle: CSSProperties = {
   textAlign: 'right',
 };
 
+const labelRowStyle: CSSProperties = {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  gap: 2,
+};
+
 const cellStyle: CSSProperties = {
   color: theme.tableHeaderText,
   fontWeight: 600,
@@ -86,9 +96,17 @@ export const BudgetTotalsMonth = memo(function BudgetTotalsMonth() {
       }}
     >
       <View style={headerLabelStyle}>
-        <Text style={{ color: theme.tableHeaderText }}>
-          <Trans>Budgeted</Trans>
-        </Text>
+        <View style={labelRowStyle}>
+          <Text style={{ color: theme.tableHeaderText }}>
+            <Trans>Budgeted</Trans>
+          </Text>
+          <HelpHint>
+            <Trans>
+              Money you assigned to each category this month. It comes out of
+              "To Budget".
+            </Trans>
+          </HelpHint>
+        </View>
         <EnvelopeCellValue
           binding={envelopeBudget.totalBudgeted}
           type="financial"
@@ -99,17 +117,38 @@ export const BudgetTotalsMonth = memo(function BudgetTotalsMonth() {
         </EnvelopeCellValue>
       </View>
       <View style={headerLabelStyle}>
-        <Text style={{ color: theme.tableHeaderText }}>
-          <Trans>Spent</Trans>
-        </Text>
+        <View style={labelRowStyle}>
+          <Text style={{ color: theme.tableHeaderText }}>
+            <Trans>Spent</Trans>
+          </Text>
+          <HelpHint>
+            <Trans>
+              Total spent in this category this month. The thin bar under each
+              amount shows how much of the available money is used: gray is on
+              track, yellow is above 85%, red is overspent.
+            </Trans>
+          </HelpHint>
+        </View>
         <EnvelopeCellValue binding={envelopeBudget.totalSpent} type="financial">
           {props => <CellValueText {...props} style={cellStyle} />}
         </EnvelopeCellValue>
       </View>
       <View style={headerLabelStyle}>
-        <Text style={{ color: theme.tableHeaderText }}>
-          <Trans>Balance</Trans>
-        </Text>
+        <View style={labelRowStyle}>
+          <Text style={{ color: theme.tableHeaderText }}>
+            <Trans>Balance</Trans>
+          </Text>
+          <HelpHint>
+            <BalanceChipLegend
+              intro={
+                <Trans>
+                  What is left to spend in each category. Money you do not spend
+                  carries over to next month.
+                </Trans>
+              }
+            />
+          </HelpHint>
+        </View>
         <EnvelopeCellValue
           binding={envelopeBudget.totalBalance}
           type="financial"
@@ -433,7 +472,15 @@ export const ExpenseCategoryMonth = memo(function ExpenseCategoryMonth({
           }}
         />
       </View>
-      <Field name="spent" width="flex" style={{ textAlign: 'right' }}>
+      <Field
+        name="spent"
+        width="flex"
+        style={{ textAlign: 'right', position: 'relative' }}
+      >
+        <SpendingProgressBar
+          spent={envelopeBudget.catSumAmount(category.id)}
+          balance={envelopeBudget.catBalance(category.id)}
+        />
         <View
           data-testid="category-month-spent"
           onClick={() => onShowActivity(category.id, month)}
