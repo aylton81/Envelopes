@@ -213,13 +213,14 @@ export function TransactionList({
               <ListBoxSection>
                 <Header
                   style={{
-                    ...styles.smallText,
+                    ...styles.verySmallText,
+                    fontWeight: 600,
                     backgroundColor: theme.pageBackground,
-                    color: theme.tableHeaderText,
+                    color: theme.pageTextLight,
                     display: 'flex',
-                    justifyContent: 'center',
-                    paddingBottom: 4,
-                    paddingTop: 4,
+                    justifyContent: 'flex-start',
+                    padding: '8px 16px 6px',
+                    borderBottom: `1px solid ${theme.tableBorder}`,
                     position: 'sticky',
                     top: '0',
                     width: '100%',

@@ -224,6 +224,7 @@ function AccountHeader({ account }: { readonly account: AccountEntity }) {
         <Text
           size="extra-large"
           style={{
+            fontFamily: styles.serifFont,
             fontWeight: 500,
             ...styles.underlinedText,
             ...(styles.lineClamp(2) as CSSProperties),
@@ -259,6 +260,7 @@ function AllAccountsHeader() {
         <Text
           size="extra-large"
           style={{
+            fontFamily: styles.serifFont,
             fontWeight: 500,
             ...styles.underlinedText,
             ...(styles.lineClamp(2) as CSSProperties),

@@ -315,7 +315,10 @@ function Balance({ balance }: BalanceProps) {
           <CellValueText
             {...props}
             style={{
-              fontSize: 18,
+              ...styles.tnum,
+              fontFamily: styles.serifFont,
+              fontSize: 26,
+              lineHeight: 1.15,
               textAlign: 'center',
               fontWeight: '500',
               color:

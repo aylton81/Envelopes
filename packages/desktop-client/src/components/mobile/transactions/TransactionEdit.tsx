@@ -220,7 +220,7 @@ export function Status({
   return (
     <Text
       style={{
-        fontSize: 11,
+        fontSize: 12,
         color,
         fontStyle: 'italic',
         textAlign: 'left',
@@ -473,7 +473,7 @@ const ChildTransactionEdit = forwardRef<
               ? theme.tableBorderSelected
               : theme.tableBorder,
           borderWidth: '1px',
-          borderRadius: '5px',
+          borderRadius: '4px',
           padding: '5px',
           margin: '10px',
         }}
@@ -1298,7 +1298,7 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
                       backgroundColor: theme.buttonNormalBackground,
                       border: `1px solid ${theme.buttonNormalBorder}`,
                       color: theme.buttonNormalText,
-                      fontSize: '11px',
+                      fontSize: '12px',
                       padding: '4px 8px',
                       borderRadius: 3,
                       height: 'auto',
@@ -1320,7 +1320,7 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
                       backgroundColor: theme.buttonNormalBackground,
                       border: `1px solid ${theme.buttonNormalBorder}`,
                       color: theme.buttonNormalText,
-                      fontSize: '11px',
+                      fontSize: '12px',
                       padding: '4px 8px',
                       borderRadius: 3,
                       height: 'auto',
@@ -1342,7 +1342,7 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
                       backgroundColor: theme.buttonNormalBackground,
                       border: `1px solid ${theme.buttonNormalBorder}`,
                       color: theme.buttonNormalText,
-                      fontSize: '11px',
+                      fontSize: '12px',
                       padding: '4px 8px',
                       borderRadius: 3,
                       height: 'auto',

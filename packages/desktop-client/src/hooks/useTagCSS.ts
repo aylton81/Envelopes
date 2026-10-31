@@ -36,7 +36,7 @@ export function useTagCSS(opts?: { ellipsis?: boolean }) {
           : { display: 'inline-flex' }),
         opacity: tagObj?.hidden ? 0.5 : undefined,
         padding: options.compact ? '0px 7px' : '3px 7px',
-        borderRadius: 16,
+        borderRadius: 2,
         userSelect: 'none',
         backgroundColor,
         color,

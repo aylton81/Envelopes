@@ -76,7 +76,7 @@ function AccountHeader<SheetFieldName extends SheetFields<'account'>>({
       style={{
         height: ROW_HEIGHT,
         width: '100%',
-        padding: '0 18px',
+        padding: '0 16px',
         color: theme.pageTextLight,
         ...style,
       }}
@@ -91,7 +91,10 @@ function AccountHeader<SheetFieldName extends SheetFields<'account'>>({
       ])}
     >
       <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row' }}>
-        <Text size="extra-large" data-testid="name">
+        <Text
+          style={{ fontSize: 13, fontWeight: 600, color: theme.pageTextLight }}
+          data-testid="name"
+        >
           {name}
         </Text>
         <Cheveron
@@ -108,7 +111,12 @@ function AccountHeader<SheetFieldName extends SheetFields<'account'>>({
         {props => (
           <CellValueText<'account', SheetFieldName>
             {...props}
-            style={{ ...styles.text }}
+            style={{
+              ...styles.tnum,
+              fontSize: 13,
+              fontWeight: 600,
+              color: theme.pageTextLight,
+            }}
           />
         )}
       </CellValue>
@@ -164,7 +172,8 @@ function AccountListItem({
             backgroundColor: theme.tableBackground,
             border: 'none',
             borderRadius: 0,
-            paddingLeft: 8,
+            paddingLeft: 10,
+            paddingRight: 16,
           }}
           data-testid="account-list-item"
           onPress={() => onSelect(account)}
@@ -194,8 +203,8 @@ function AccountListItem({
             <TextOneLine
               style={{
                 ...styles.text,
-                fontSize: 17,
-                fontWeight: 600,
+                fontSize: 15,
+                fontWeight: 500,
                 color: isUpdated ? theme.mobileAccountText : theme.pillText,
               }}
               data-testid="account-name"
@@ -208,7 +217,8 @@ function AccountListItem({
               <CellValueText<'account', 'balance'>
                 {...props}
                 style={{
-                  fontSize: 16,
+                  ...styles.tnum,
+                  fontSize: 15,
                   ...makeAmountFullStyle(props.value, {
                     positiveColor: theme.numberPositive,
                     negativeColor: theme.numberNegative,
@@ -512,9 +522,10 @@ const AccountList = forwardRef<HTMLDivElement, AccountListProps>(
         style={{
           display: 'flex',
           flexDirection: 'column',
-          margin: '0 8px',
-          border: `1px solid ${theme.tableBorder}`,
-          borderRadius: 4,
+          // Edge-to-edge section with hairlines, like the budget list.
+          margin: 0,
+          borderTop: `1px solid ${theme.tableBorder}`,
+          borderBottom: `1px solid ${theme.tableBorder}`,
           overflow: 'hidden',
         }}
       >

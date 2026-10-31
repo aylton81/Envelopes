@@ -123,7 +123,7 @@ export const styles: CSSProperties = {
     animationDelay: '0.5s',
   },
   underlinedText: {
-    borderBottom: `2px solid`,
+    borderBottom: `1px solid`,
   },
   noTapHighlight: {
     WebkitTapHighlightColor: 'transparent',
