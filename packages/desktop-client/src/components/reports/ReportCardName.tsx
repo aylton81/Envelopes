@@ -47,6 +47,8 @@ export const ReportCardName = ({
         margin: 0,
         padding: 0,
         ...styles.mediumText,
+        fontFamily: styles.serifFont,
+        fontSize: 17,
         marginBottom: 5,
       }}
     >

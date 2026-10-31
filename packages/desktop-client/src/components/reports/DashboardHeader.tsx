@@ -5,6 +5,7 @@ import { Button } from '@actual-app/components/button';
 import { SvgPencil1 } from '@actual-app/components/icons/v2';
 import { InitialFocus } from '@actual-app/components/initial-focus';
 import { Input } from '@actual-app/components/input';
+import { styles } from '@actual-app/components/styles';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 import type { DashboardPageEntity } from '@actual-app/core/types/models';
@@ -63,7 +64,8 @@ export function DashboardHeader({ dashboard }: DashboardHeaderProps) {
     >
       <View
         style={{
-          fontSize: 25,
+          fontFamily: styles.serifFont,
+          fontSize: 26,
           fontWeight: 500,
           flexGrow: 0,
           flexShrink: 0,
@@ -80,7 +82,8 @@ export function DashboardHeader({ dashboard }: DashboardHeaderProps) {
             onUpdate={handleSaveName}
             onEscape={() => setEditingName(false)}
             style={{
-              fontSize: 25,
+              fontFamily: styles.serifFont,
+              fontSize: 26,
               fontWeight: 500,
               marginTop: -3,
               marginBottom: -4,
@@ -93,7 +96,8 @@ export function DashboardHeader({ dashboard }: DashboardHeaderProps) {
         <>
           <View
             style={{
-              fontSize: 25,
+              fontFamily: styles.serifFont,
+              fontSize: 26,
               fontWeight: 500,
               marginRight: 5,
               flexGrow: 0,

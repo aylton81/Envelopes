@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 
+import { styles } from '@actual-app/components/styles';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 import { amountToInteger } from '@actual-app/core/shared/util';
@@ -50,7 +51,7 @@ export function FormulaResult({
   const fontSize =
     fontSizeMode === 'static'
       ? `${staticFontSize}px`
-      : `min(${(FONT_SIZE_SCALE_FACTOR * 100) / longestLineLength}cqi, calc((100cqb - ${CONTAINER_MARGIN * 2}px) / ${lineCount}))`;
+      : `min(${(FONT_SIZE_SCALE_FACTOR * 100) / longestLineLength}cqi, calc((100cqb - ${CONTAINER_MARGIN * 2}px) / ${lineCount}), 64px)`;
 
   // Determine color
   const color = customColor
@@ -72,6 +73,8 @@ export function FormulaResult({
             width: '100%',
             height: '100%',
             maxWidth: '100%',
+            fontFamily: styles.serifFont,
+            fontWeight: 500,
             fontSize,
             lineHeight: 1,
             margin: `${CONTAINER_MARGIN}px 0`,

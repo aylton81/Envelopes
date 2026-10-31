@@ -77,7 +77,8 @@ export function ReportCard({
         borderBottomRightRadius: 2,
         width: '100%',
         height: '100%',
-        boxShadow: '0 2px 6px rgba(0, 0, 0, .15)',
+        // Persistent surface: hairline, not a lifted shadow.
+        boxShadow: `0 0 0 1px ${theme.tableBorder}`,
         transition: 'box-shadow .25s',
         ...(isEditing
           ? {
@@ -94,7 +95,7 @@ export function ReportCard({
               },
             }),
         ':hover': {
-          ...(to ? { boxShadow: '0 4px 6px rgba(0, 0, 0, .15)' } : null),
+          ...(to ? { boxShadow: `0 0 0 1px ${theme.pageTextSubdued}` } : null),
           ...(isEditing ? { cursor: 'move', filter: 'grayscale(0)' } : null),
         },
         ...(to ? null : containerProps),

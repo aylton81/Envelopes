@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { styles } from '@actual-app/components/styles';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 
@@ -37,7 +38,8 @@ export function SummaryNumber({
 
   displayAmount += suffix;
 
-  const fontSize = `min(${(FONT_SIZE_SCALE_FACTOR * 100) / displayAmount.length}cqi, calc(100cqb - ${CONTAINER_MARGIN * 2}px))`;
+  // Scales with the card, capped so a figure never shouts across the board.
+  const fontSize = `min(${(FONT_SIZE_SCALE_FACTOR * 100) / displayAmount.length}cqi, calc(100cqb - ${CONTAINER_MARGIN * 2}px), 64px)`;
 
   return (
     <>
@@ -72,7 +74,15 @@ export function SummaryNumber({
                   : theme.reportsNumberPositive,
           }}
         >
-          <FinancialText aria-hidden="true" style={{ fontSize, lineHeight: 1 }}>
+          <FinancialText
+            aria-hidden="true"
+            style={{
+              fontFamily: styles.serifFont,
+              fontWeight: 500,
+              fontSize,
+              lineHeight: 1,
+            }}
+          >
             <PrivacyFilter>{displayAmount}</PrivacyFilter>
           </FinancialText>
         </View>
