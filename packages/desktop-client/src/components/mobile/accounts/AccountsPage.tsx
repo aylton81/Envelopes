@@ -187,7 +187,7 @@ function AccountListItem({
                 width: 8,
                 flexShrink: 0,
                 height: 8,
-                borderRadius: 8,
+                borderRadius: 4,
                 opacity: isConnected ? 1 : 0,
               }}
             />
@@ -514,7 +514,7 @@ const AccountList = forwardRef<HTMLDivElement, AccountListProps>(
           flexDirection: 'column',
           margin: '0 8px',
           border: `1px solid ${theme.tableBorder}`,
-          borderRadius: 8,
+          borderRadius: 4,
           overflow: 'hidden',
         }}
       >

@@ -19,7 +19,7 @@ export function FloatingActionBar({ style, children }: FloatingActionBarProps) {
         width: '95vw',
         height: 60,
         zIndex: 100,
-        borderRadius: 8,
+        borderRadius: 4,
         border: `1px solid ${theme.floatingActionBarBorder}`,
         ...style,
       }}

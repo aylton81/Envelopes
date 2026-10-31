@@ -72,7 +72,7 @@ export const BudgetSummary = memo(({ month }: BudgetSummaryProps) => {
             ? theme.budgetCurrentMonth
             : theme.budgetOtherMonth,
         boxShadow: styles.cardShadow,
-        borderRadius: 16,
+        borderRadius: 4,
         marginLeft: 0,
         marginRight: 0,
         marginTop: 5,
@@ -127,11 +127,11 @@ export const BudgetSummary = memo(({ month }: BudgetSummaryProps) => {
               {
                 textAlign: 'center',
                 marginTop: 3,
-                fontSize: 18,
+                fontFamily: styles.serifFont,
+                fontSize: 20,
                 fontWeight: 500,
                 textDecorationSkip: 'ink',
               },
-              currentMonth === month && { fontWeight: 'bold' },
             ])}
           >
             {monthUtils.format(month, 'MMMM', locale)}

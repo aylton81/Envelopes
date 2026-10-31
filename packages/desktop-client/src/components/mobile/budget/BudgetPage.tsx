@@ -998,7 +998,8 @@ function MonthSelector({
         variant="bare"
         style={{
           textAlign: 'center',
-          fontSize: 16,
+          fontFamily: styles.serifFont,
+          fontSize: 18,
           fontWeight: 500,
         }}
         onPress={() => {

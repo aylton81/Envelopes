@@ -16,7 +16,7 @@ function ChipSample({ color }: { color: string }) {
         width: 28,
         height: 14,
         flexShrink: 0,
-        borderRadius: radius.pill,
+        borderRadius: radius.sm,
         backgroundColor: `color-mix(in srgb, ${color} 30%, transparent)`,
         border: `1px solid ${color}`,
       }}

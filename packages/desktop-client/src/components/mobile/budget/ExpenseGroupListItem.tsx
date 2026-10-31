@@ -83,8 +83,13 @@ export function ExpenseGroupListItem({
     <GridListItem textValue={categoryGroup.name} {...props}>
       <Card
         style={{
-          marginTop: 4,
-          marginBottom: 4,
+          // Sections run edge to edge like a ledger; hairlines separate them.
+          marginTop: 0,
+          marginBottom: 0,
+          marginLeft: 0,
+          marginRight: 0,
+          borderRadius: 0,
+          boxShadow: 'none',
         }}
       >
         <ExpenseGroupHeader

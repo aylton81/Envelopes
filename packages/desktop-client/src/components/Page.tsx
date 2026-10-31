@@ -29,7 +29,8 @@ export function PageHeader({ title, style }: PageHeaderProps) {
       <View
         style={{
           flexDirection: 'row',
-          fontSize: 25,
+          fontFamily: styles.serifFont,
+          fontSize: 26,
           fontWeight: 500,
         }}
       >
@@ -63,6 +64,7 @@ export function MobilePageHeader({
         height: `calc(${HEADER_HEIGHT}px + env(safe-area-inset-top))`,
         paddingTop: 'env(safe-area-inset-top)',
         backgroundColor: theme.mobileHeaderBackground,
+        borderBottom: `1px solid ${theme.tableBorder}`,
         '& *': {
           color: theme.mobileHeaderText,
         },
@@ -88,7 +90,8 @@ export function MobilePageHeader({
           justifyContent: 'center',
           flexDirection: 'row',
           flexBasis: '50%',
-          fontSize: 17,
+          fontFamily: styles.serifFont,
+          fontSize: 19,
           fontWeight: 500,
           overflowY: 'auto',
           display: 'flex',

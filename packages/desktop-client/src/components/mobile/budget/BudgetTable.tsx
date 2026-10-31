@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Button } from '@actual-app/components/button';
@@ -39,9 +39,10 @@ import { IncomeGroup } from './IncomeGroup';
 export const ROW_HEIGHT = 50;
 
 export const PILL_STYLE: CSSProperties = {
-  borderRadius: 16,
+  borderRadius: 2,
   color: theme.pillText,
-  backgroundColor: theme.pillBackgroundLight,
+  // Amounts read as plain figures; only the balance carries a tinted chip.
+  backgroundColor: 'transparent',
 };
 
 export function getColumnWidth({
@@ -61,94 +62,96 @@ export function getColumnWidth({
   return show3Columns ? `${35 + offset}vw` : `${45 + offset}vw`;
 }
 
-type ToBudgetProps = {
-  toBudget: Binding<'envelope-budget', 'to-budget'>;
+type BandProps = {
+  label: string;
+  amount: ReactNode;
+  tone: 'positive' | 'neutral' | 'negative' | 'warning';
   onPress: () => void;
-  show3Columns: boolean;
 };
 
-function ToBudget({ toBudget, onPress, show3Columns }: ToBudgetProps) {
-  const { t } = useTranslation();
-  const amount = useSheetValue(toBudget) ?? 0;
-  const format = useFormat();
-  const sidebarColumnWidth = getColumnWidth({ show3Columns, isSidebar: true });
+/**
+ * Full-width band at the top of the mobile budget that answers the first
+ * question of every visit: how much money still needs a job.
+ */
+function SummaryBand({ label, amount, tone, onPress }: BandProps) {
+  const toneColor = {
+    positive: theme.toBudgetPositive,
+    neutral: theme.budgetNumberNeutral,
+    negative: theme.toBudgetNegative,
+    warning: theme.warningText,
+  }[tone];
 
   return (
-    <View
+    <Button
+      variant="bare"
+      onPress={onPress}
       style={{
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
+        width: '100%',
+        borderRadius: 0,
+        justifyContent: 'space-between',
         alignItems: 'center',
-        width: sidebarColumnWidth,
+        gap: 12,
+        padding: '14px 16px',
+        backgroundColor:
+          tone === 'neutral'
+            ? theme.pageBackground
+            : `color-mix(in srgb, ${toneColor} 12%, ${theme.pageBackground})`,
+        borderTop: `1px solid ${theme.tableBorder}`,
+        borderBottom: `1px solid ${theme.tableBorder}`,
       }}
     >
-      <Button variant="bare" onPress={onPress}>
-        <View>
-          <View>
-            <AutoTextSize
-              as={Label}
-              minFontSizePx={6}
-              maxFontSizePx={12}
-              mode="oneline"
-              title={amount < 0 ? t('Overbudgeted') : t('To Budget')}
-              style={{
-                ...(amount < 0 ? styles.smallText : {}),
-                color: theme.formInputText,
-                flexShrink: 0,
-                textAlign: 'left',
-              }}
-            />
-          </View>
-          <CellValue binding={toBudget} type="financial">
-            {({ type, value }) => (
-              <View>
-                <PrivacyFilter>
-                  <AutoTextSize
-                    key={value}
-                    as={Text}
-                    minFontSizePx={6}
-                    maxFontSizePx={12}
-                    mode="oneline"
-                    style={{
-                      ...styles.tnum,
-                      fontSize: 12,
-                      fontWeight: '700',
-                      color:
-                        amount < 0
-                          ? theme.toBudgetNegative
-                          : amount > 0
-                            ? theme.toBudgetPositive
-                            : theme.budgetNumberNeutral,
-                    }}
-                  >
-                    {format(value, type)}
-                  </AutoTextSize>
-                </PrivacyFilter>
-              </View>
-            )}
-          </CellValue>
-        </View>
-        <SvgCheveronRight
+      <PrivacyFilter>
+        <Text
           style={{
-            flexShrink: 0,
-            color: theme.mobileHeaderTextSubdued,
-            marginLeft: 5,
+            ...styles.tnum,
+            fontFamily: styles.serifFont,
+            fontSize: 26,
+            fontWeight: 500,
+            lineHeight: 1.1,
+            color: toneColor,
           }}
+        >
+          {amount}
+        </Text>
+      </PrivacyFilter>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+        <Text style={{ fontSize: 14, color: theme.pageText }}>{label}</Text>
+        <SvgCheveronRight
+          style={{ flexShrink: 0, color: theme.pageTextSubdued }}
           width={14}
           height={14}
         />
-      </Button>
-    </View>
+      </View>
+    </Button>
+  );
+}
+
+type ToBudgetProps = {
+  toBudget: Binding<'envelope-budget', 'to-budget'>;
+  onPress: () => void;
+};
+
+function ToBudget({ toBudget, onPress }: ToBudgetProps) {
+  const { t } = useTranslation();
+  const amount = useSheetValue(toBudget) ?? 0;
+  const format = useFormat();
+
+  return (
+    <SummaryBand
+      label={amount < 0 ? t('Overbudgeted') : t('To Budget')}
+      amount={format(amount, 'financial')}
+      tone={amount < 0 ? 'negative' : amount > 0 ? 'positive' : 'neutral'}
+      onPress={onPress}
+    />
   );
 }
 
 type SavedProps = {
   projected: boolean;
   onPress: () => void;
-  show3Columns: boolean;
 };
 
-function Saved({ projected, onPress, show3Columns }: SavedProps) {
+function Saved({ projected, onPress }: SavedProps) {
   const { t } = useTranslation();
   const binding = projected
     ? trackingBudget.totalBudgetedSaved
@@ -157,87 +160,20 @@ function Saved({ projected, onPress, show3Columns }: SavedProps) {
   const saved = useSheetValue<'tracking-budget', typeof binding>(binding) || 0;
   const format = useFormat();
   const isNegative = saved < 0;
-  const sidebarColumnWidth = getColumnWidth({ show3Columns, isSidebar: true });
 
   return (
-    <View
-      style={{
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        width: sidebarColumnWidth,
-      }}
-    >
-      <Button variant="bare" onPress={onPress}>
-        <View style={{ alignItems: 'flex-start' }}>
-          {projected ? (
-            <View>
-              <AutoTextSize
-                as={Label}
-                minFontSizePx={6}
-                maxFontSizePx={12}
-                mode="oneline"
-                title={t('Projected savings')}
-                style={{
-                  color: theme.formInputText,
-                  textAlign: 'left',
-                  fontSize: 12,
-                }}
-              />
-            </View>
-          ) : (
-            <Label
-              title={isNegative ? t('Overspent') : t('Saved')}
-              style={{
-                color: theme.formInputText,
-                textAlign: 'left',
-              }}
-            />
-          )}
-
-          <CellValue<'tracking-budget', typeof binding>
-            binding={binding}
-            type="financial"
-          >
-            {({ type, value }) => (
-              <View>
-                <PrivacyFilter>
-                  <AutoTextSize
-                    key={value}
-                    as={Text}
-                    minFontSizePx={6}
-                    maxFontSizePx={12}
-                    mode="oneline"
-                    style={{
-                      ...styles.tnum,
-                      textAlign: 'left',
-                      fontSize: 12,
-                      fontWeight: '700',
-                      color: projected
-                        ? theme.warningText
-                        : isNegative
-                          ? theme.errorTextDark
-                          : theme.formInputText,
-                    }}
-                  >
-                    {format(value, type)}
-                  </AutoTextSize>
-                </PrivacyFilter>
-              </View>
-            )}
-          </CellValue>
-        </View>
-        <SvgCheveronRight
-          style={{
-            flexShrink: 0,
-            color: theme.mobileHeaderTextSubdued,
-            marginLeft: 5,
-          }}
-          width={14}
-          height={14}
-        />
-      </Button>
-    </View>
+    <SummaryBand
+      label={
+        projected
+          ? t('Projected savings')
+          : isNegative
+            ? t('Overspent')
+            : t('Saved')
+      }
+      amount={format(saved, 'financial')}
+      tone={projected ? 'warning' : isNegative ? 'negative' : 'neutral'}
+      onPress={onPress}
+    />
   );
 }
 
@@ -348,7 +284,8 @@ export function BudgetTable({
   onEditCategory,
 }: BudgetTableProps) {
   const { width } = useResponsive();
-  const show3Columns = width >= 300;
+  // Phones show one figure (Budgeted or Spent, toggled) plus the balance.
+  const show3Columns = width >= 480;
 
   // let editMode = false; // neuter editMode -- sorry, not rewriting drag-n-drop right now
 
@@ -370,12 +307,22 @@ export function BudgetTable({
 
   return (
     <>
+      {budgetType === 'tracking' ? (
+        <Saved
+          projected={month >= monthUtils.currentMonth()}
+          onPress={onShowBudgetSummary}
+        />
+      ) : (
+        <ToBudget
+          toBudget={envelopeBudget.toBudget}
+          onPress={onShowBudgetSummary}
+        />
+      )}
       <BudgetTableHeader
         month={month}
         show3Columns={show3Columns}
         showSpentColumn={showSpentColumn}
         toggleSpentColumn={toggleSpentColumn}
-        onShowBudgetSummary={onShowBudgetSummary}
       />
       <PullToRefresh onRefresh={onRefresh}>
         <View
@@ -408,7 +355,6 @@ export function BudgetTable({
 type BudgetTableHeaderProps = {
   show3Columns: boolean;
   month: string;
-  onShowBudgetSummary: () => void;
   showSpentColumn: boolean;
   toggleSpentColumn: () => void;
 };
@@ -416,7 +362,6 @@ type BudgetTableHeaderProps = {
 function BudgetTableHeader({
   show3Columns,
   month,
-  onShowBudgetSummary,
   showSpentColumn,
   toggleSpentColumn,
 }: BudgetTableHeaderProps) {
@@ -464,19 +409,9 @@ function BudgetTableHeader({
           alignItems: 'center',
         }}
       >
-        {budgetType === 'tracking' ? (
-          <Saved
-            projected={month >= monthUtils.currentMonth()}
-            onPress={onShowBudgetSummary}
-            show3Columns={show3Columns}
-          />
-        ) : (
-          <ToBudget
-            toBudget={envelopeBudget.toBudget}
-            onPress={onShowBudgetSummary}
-            show3Columns={show3Columns}
-          />
-        )}
+        <Text style={{ fontSize: 12, color: theme.formInputText }}>
+          <Trans>Categories</Trans>
+        </Text>
       </View>
       <View
         style={{

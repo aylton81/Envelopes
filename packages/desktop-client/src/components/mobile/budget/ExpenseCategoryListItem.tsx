@@ -29,6 +29,7 @@ import { envelopeBudget, trackingBudget } from '#spreadsheet/bindings';
 import { BalanceCell } from './BalanceCell';
 import { BudgetCell } from './BudgetCell';
 import { getColumnWidth, ROW_HEIGHT } from './BudgetTable';
+import { CategoryStatusLine } from './CategoryStatusLine';
 import { SpentCell } from './SpentCell';
 
 type ExpenseCategoryNameProps = {
@@ -85,7 +86,8 @@ function ExpenseCategoryName({
               ...styles.lineClamp(2),
               width: sidebarColumnWidth,
               textAlign: 'left',
-              ...styles.smallText,
+              fontSize: 14,
+              fontWeight: 500,
             }}
             data-testid="category-name"
           >
@@ -149,11 +151,8 @@ function ExpenseCategoryCells({
         justifyContent: 'flex-end',
         alignItems: 'center',
         flexDirection: 'row',
-        position: 'relative',
-        alignSelf: 'stretch',
       }}
     >
-      <SpendingProgressBar spent={spent} balance={balance} />
       <View
         style={{
           ...(!show3Columns && !showBudgetedColumn && { display: 'none' }),
@@ -459,35 +458,54 @@ export function ExpenseCategoryListItem({
     >
       <View
         style={{
-          height: ROW_HEIGHT,
+          minHeight: ROW_HEIGHT,
           borderColor: theme.tableBorder,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingLeft: 5,
-          paddingRight: 5,
           borderBottomWidth: 1,
+          padding: '10px 10px 10px 12px',
+          gap: 6,
           opacity: isHidden ? 0.5 : undefined,
           backgroundColor: monthUtils.isCurrentMonth(month)
             ? theme.budgetCurrentMonth
             : theme.budgetOtherMonth,
         }}
       >
-        <ExpenseCategoryName
-          category={category}
-          onEditCategory={onEditCategory}
-          show3Columns={show3Columns}
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <ExpenseCategoryName
+            category={category}
+            onEditCategory={onEditCategory}
+            show3Columns={show3Columns}
+          />
+          <ExpenseCategoryCells
+            key={`${category.id}-${show3Columns}-${showBudgetedColumn}`}
+            category={category}
+            month={month}
+            onBudgetAction={onBudgetAction}
+            show3Columns={show3Columns}
+            showBudgetedColumn={showBudgetedColumn}
+            onOpenBalanceMenu={onOpenBalanceMenu}
+            onShowActivity={onShowActivity}
+          />
+        </View>
+        <SpendingProgressBar
+          variant="inline"
+          spent={
+            budgetType === 'tracking'
+              ? trackingBudget.catSumAmount(category.id)
+              : envelopeBudget.catSumAmount(category.id)
+          }
+          balance={
+            budgetType === 'tracking'
+              ? trackingBudget.catBalance(category.id)
+              : envelopeBudget.catBalance(category.id)
+          }
         />
-        <ExpenseCategoryCells
-          key={`${category.id}-${show3Columns}-${showBudgetedColumn}`}
-          category={category}
-          month={month}
-          onBudgetAction={onBudgetAction}
-          show3Columns={show3Columns}
-          showBudgetedColumn={showBudgetedColumn}
-          onOpenBalanceMenu={onOpenBalanceMenu}
-          onShowActivity={onShowActivity}
-        />
+        <CategoryStatusLine category={category} />
       </View>
     </GridListItem>
   );

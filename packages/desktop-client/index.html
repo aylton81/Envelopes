@@ -62,8 +62,8 @@
       }
 
       *:focus {
-        /* colors.b5 */
-        outline-color: #2b8fed;
+        /* Focus follows the theme accent; blue is the pre-theme fallback. */
+        outline-color: var(--color-formInputBorderSelected, #2b8fed);
       }
 
       /* recharts makes chart surfaces and layers focusable for keyboard

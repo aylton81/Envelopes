@@ -69,7 +69,7 @@ export function BudgetSummary({ month }: BudgetSummaryProps) {
             ? theme.budgetCurrentMonth
             : theme.budgetOtherMonth,
         boxShadow: styles.cardShadow,
-        borderRadius: 16,
+        borderRadius: 4,
         marginLeft: 0,
         marginRight: 0,
         marginTop: 5,
@@ -123,7 +123,8 @@ export function BudgetSummary({ month }: BudgetSummaryProps) {
             className={css({
               textAlign: 'center',
               marginTop: 3,
-              fontSize: 18,
+              fontFamily: styles.serifFont,
+              fontSize: 20,
               fontWeight: 500,
               textDecorationSkip: 'ink',
             })}

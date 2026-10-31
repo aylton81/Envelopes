@@ -83,7 +83,15 @@ export function IncomeGroup({
         <Label title={t('Received')} style={{ width: columnWidth }} />
       </View>
 
-      <Card style={{ marginTop: 0 }}>
+      <Card
+        style={{
+          marginTop: 16,
+          marginLeft: 0,
+          marginRight: 0,
+          borderRadius: 0,
+          boxShadow: 'none',
+        }}
+      >
         <IncomeGroupHeader
           group={categoryGroup}
           month={month}

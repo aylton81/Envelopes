@@ -29,9 +29,16 @@ describe('getSpendingProgress', () => {
 
   it('is near the limit from 85% on', () => {
     expect(getSpendingProgress(-8500, 1500)?.status).toBe('near-limit');
+    expect(getSpendingProgress(-9900, 100)).toEqual({
+      ratio: 0.99,
+      status: 'near-limit',
+    });
+  });
+
+  it('treats spending exactly to plan as done, not a warning', () => {
     expect(getSpendingProgress(-10000, 0)).toEqual({
       ratio: 1,
-      status: 'near-limit',
+      status: 'on-track',
     });
   });
 

@@ -209,7 +209,7 @@ function AccountHeader({ account }: { readonly account: AccountEntity }) {
             marginRight: 5,
             width: 8,
             height: 8,
-            borderRadius: 8,
+            borderRadius: 4,
             flexShrink: 0,
             backgroundColor: pending
               ? theme.sidebarItemBackgroundPending

@@ -123,9 +123,9 @@ export function BalanceWithCarryover({
         textAlign: 'right',
         // Non-zero balances sit in a soft pill tinted from their own color.
         ...(balanceValue !== 0 && {
-          backgroundColor: `color-mix(in srgb, ${amountStyle.color} 12%, transparent)`,
-          borderRadius: radius.pill,
-          padding: '3px 10px',
+          backgroundColor: `color-mix(in srgb, ${amountStyle.color} 12%, ${theme.tableBackground})`,
+          borderRadius: radius.sm,
+          padding: '2px 6px',
         }),
         ...(!isDisabled && {
           cursor: 'pointer',

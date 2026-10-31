@@ -100,4 +100,37 @@
   --palette-chartQual7: #55dbc1;
   --palette-chartQual8: #efda97;
   --palette-chartQual9: #df948a;
+
+  /* Warm stone neutrals and terracotta accent used by the light and dark
+     themes. Midnight keeps the navy/purple scales above. */
+  --palette-warm50: #faf9f5;
+  --palette-warm80: #f5f4ed;
+  --palette-warm100: #f0eee6;
+  --palette-warm125: #e8e6dc;
+  --palette-warm150: #dedcd1;
+  --palette-warm200: #c2c0b6;
+  --palette-warm300: #a6a39a;
+  --palette-warm400: #8a8780;
+  --palette-warm500: #6e6c66;
+  --palette-warm600: #4d4c48;
+  --palette-warm700: #3d3d3a;
+  --palette-warm800: #30302e;
+  --palette-warm900: #262624;
+  --palette-warm950: #1f1e1d;
+
+  --palette-clay50: #fdf5f1;
+  --palette-clay100: #fae8df;
+  --palette-clay125: #f5d6c8;
+  --palette-clay150: #f0c4b1;
+  --palette-clay200: #e8a68f;
+  --palette-clay300: #d97757;
+  --palette-clay400: #c6613f;
+  --palette-clay500: #b4552f;
+  --palette-clay600: #9c4728;
+  --palette-clay700: #7e3820;
+  --palette-clay800: #5a2817;
+  --palette-clay900: #3d1c10;
+
+  /* Warm ochre for warnings on graphite. */
+  --palette-ochre300: #d9a447;
 }
