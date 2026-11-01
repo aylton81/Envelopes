@@ -103,6 +103,27 @@ export function accountGroupBalance(
   } satisfies Binding<'account', `account-group-balance-${string}`>;
 }
 
+/**
+ * Balance of the open accounts in one account-type section (Cash, Credit,
+ * Loans, Tracking). The account ids are part of the name so the cell is
+ * rebuilt when accounts move between sections.
+ */
+export function accountTypeGroupBalance(
+  group: string,
+  accountIds: ReadonlyArray<AccountEntity['id']>,
+) {
+  return {
+    name: `account-group-balance-type-${group}-${accountIds.join('.')}`,
+    query: q('transactions')
+      .filter({
+        account: { $oneof: [...accountIds] },
+        'account.closed': false,
+      })
+      .options({ splits: 'none' })
+      .calculate({ $sum: '$amount' }),
+  } satisfies Binding<'account', `account-group-balance-${string}`>;
+}
+
 export function categoryBalance(
   categoryId: CategoryEntity['id'],
   month: string,

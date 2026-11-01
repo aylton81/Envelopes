@@ -1,5 +1,9 @@
 import { useTranslation } from 'react-i18next';
 
+import {
+  ACCOUNT_TYPE_GROUPS,
+  getAccountTypeLabel,
+} from '#accounts/accountTypes';
 import { MobileSheet } from '#components/mobile/MobileSheet';
 import { MobileSheetNotes } from '#components/mobile/MobileSheetNotes';
 import { MobileSheetRow } from '#components/mobile/MobileSheetRow';
@@ -105,6 +109,17 @@ export function AccountMenuModal({
                 onPress={() => onCloseAccount?.(account.id)}
               />
             )}
+          </MobileSheetSection>
+
+          <MobileSheetSection title={t('Account type')}>
+            {ACCOUNT_TYPE_GROUPS.flatMap(({ types }) => types).map(type => (
+              <MobileSheetRow
+                key={type}
+                label={getAccountTypeLabel(t, type)}
+                isSelected={account.type === type}
+                onPress={() => onSave?.({ ...account, type })}
+              />
+            ))}
           </MobileSheetSection>
         </>
       )}

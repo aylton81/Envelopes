@@ -8,6 +8,13 @@ import type {
   ScheduleEntity,
   TransactionEntity,
 } from '@actual-app/core/types/models';
+import {
+  addMonths,
+  addWeeks,
+  addYears,
+  format as formatDate,
+  parseISO,
+} from 'date-fns';
 
 export function isFutureTransaction(transaction: TransactionEntity): boolean {
   const today = monthUtils.currentDay();
@@ -32,9 +39,65 @@ export function calculateFutureTransactionInfo(
 export async function createSingleTimeScheduleFromTransaction(
   transaction: TransactionEntity,
 ): Promise<ScheduleEntity['id']> {
-  const conditions: RuleConditionEntity[] = [
+  const formattedDate = monthUtils.format(transaction.date, 'MMM dd, yyyy');
+  const timestamp = Date.now();
+  return createScheduleFromTransaction(
+    transaction,
     { op: 'is', field: 'date', value: transaction.date },
-  ];
+    `Auto-created future transaction (${formattedDate}) - ${timestamp}`,
+  );
+}
+
+export type RepeatFrequency = 'weekly' | 'monthly' | 'yearly';
+
+/** The date one period after `date` (yyyy-MM-dd). */
+export function nextOccurrence(date: string, frequency: RepeatFrequency) {
+  const parsed = parseISO(date);
+  const next =
+    frequency === 'weekly'
+      ? addWeeks(parsed, 1)
+      : frequency === 'monthly'
+        ? addMonths(parsed, 1)
+        : addYears(parsed, 1);
+  return formatDate(next, 'yyyy-MM-dd');
+}
+
+/**
+ * Turns a transaction the user just entered into a repeating schedule that
+ * starts with the next occurrence, so today's transaction is not doubled.
+ * The schedule keeps the transaction's payee, account, amount, category
+ * and notes, and is named after the payee.
+ */
+export async function createRecurringScheduleFromTransaction(
+  transaction: TransactionEntity,
+  frequency: RepeatFrequency,
+  name: string | undefined,
+): Promise<ScheduleEntity['id']> {
+  return createScheduleFromTransaction(
+    transaction,
+    {
+      op: 'isapprox',
+      field: 'date',
+      value: {
+        start: nextOccurrence(transaction.date, frequency),
+        frequency,
+        interval: 1,
+        patterns: [],
+        skipWeekend: false,
+        weekendSolveMode: 'after',
+        endMode: 'never',
+      },
+    },
+    name,
+  );
+}
+
+async function createScheduleFromTransaction(
+  transaction: TransactionEntity,
+  dateCondition: RuleConditionEntity,
+  name: string | undefined,
+): Promise<ScheduleEntity['id']> {
+  const conditions: RuleConditionEntity[] = [dateCondition];
 
   const actions: RuleActionEntity[] = [];
 
@@ -123,15 +186,11 @@ export async function createSingleTimeScheduleFromTransaction(
     }
   }
 
-  const formattedDate = monthUtils.format(transaction.date, 'MMM dd, yyyy');
-  const timestamp = Date.now();
-  const scheduleName = `Auto-created future transaction (${formattedDate}) - ${timestamp}`;
-
   const scheduleId = await send('schedule/create', {
     conditions,
     schedule: {
-      posts_transaction: true,
-      name: scheduleName,
+      posts_transaction: dateCondition.op === 'is',
+      ...(name ? { name } : {}),
     },
   });
 

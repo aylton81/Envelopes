@@ -10,6 +10,11 @@ export type AccountEntity = {
   last_reconciled: string | null;
   tombstone: 0 | 1;
   account_group_id: AccountGroupEntity['id'] | null;
+  /**
+   * What kind of account this is (see AccountType). Older budgets may hold
+   * legacy values such as 'debt' or 'other', or nothing at all.
+   */
+  type?: string | null;
 
   // Sync fields
   account_id: string | null;
@@ -27,6 +32,17 @@ export type AccountEntity = {
 };
 
 export type AccountSyncSource = BankSyncProviders;
+
+export type AccountType =
+  | 'checking'
+  | 'savings'
+  | 'cash'
+  | 'credit'
+  | 'lineOfCredit'
+  | 'mortgage'
+  | 'loan'
+  | 'investment'
+  | 'other';
 
 export type BankSyncStatus =
   | 'ok'

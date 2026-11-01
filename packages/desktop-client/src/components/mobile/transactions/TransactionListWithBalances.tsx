@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { SvgFilter } from '@actual-app/components/icons/v1';
@@ -89,6 +89,12 @@ type TransactionListWithBalancesProps = {
   isReconciling?: boolean;
   onToggleTransactionCleared?: (transaction: TransactionEntity) => void;
   filtered?: boolean;
+  /** Replaces the "Balance" label, e.g. "Current bill" on a credit card. */
+  balanceLabel?: string;
+  /** Show the balance with the sign flipped (money owed as positive). */
+  invertBalance?: boolean;
+  /** Shown under the balance, e.g. a "Pay bill" button. */
+  balanceAction?: ReactNode;
 };
 
 export function TransactionListWithBalances({
@@ -109,6 +115,9 @@ export function TransactionListWithBalances({
   isReconciling = false,
   onToggleTransactionCleared,
   filtered = false,
+  balanceLabel,
+  invertBalance = false,
+  balanceAction,
 }: TransactionListWithBalancesProps) {
   const selectedInst = useSelected('transactions', [...transactions], []);
 
@@ -130,6 +139,8 @@ export function TransactionListWithBalances({
             {balanceCleared && balanceUncleared ? (
               <BalanceWithCleared
                 balance={balance}
+                balanceLabel={balanceLabel}
+                invertBalance={invertBalance}
                 balanceCleared={balanceCleared}
                 balanceUncleared={balanceUncleared}
                 alwaysShowCleared={isReconciling}
@@ -137,7 +148,11 @@ export function TransactionListWithBalances({
             ) : (
               <>
                 <View style={{ flexBasis: '33%' }} />
-                <Balance balance={balance} />
+                <Balance
+                  balance={balance}
+                  label={balanceLabel}
+                  invert={invertBalance}
+                />
                 <View
                   style={{
                     flexBasis: '33%',
@@ -150,6 +165,11 @@ export function TransactionListWithBalances({
               </>
             )}
           </View>
+          {balanceAction && (
+            <View style={{ alignItems: 'center', marginTop: 10 }}>
+              {balanceAction}
+            </View>
+          )}
           <TransactionSearchInput
             placeholder={searchPlaceholder}
             onSearch={onSearch}
@@ -224,6 +244,8 @@ type BalanceWithClearedProps = {
     TransactionListWithBalancesProps['balanceCleared']
   >;
   balance: TransactionListWithBalancesProps['balance'];
+  balanceLabel?: string;
+  invertBalance?: boolean;
   alwaysShowCleared?: boolean;
 };
 
@@ -231,6 +253,8 @@ function BalanceWithCleared({
   balanceUncleared,
   balanceCleared,
   balance,
+  balanceLabel,
+  invertBalance,
   alwaysShowCleared = false,
 }: BalanceWithClearedProps) {
   const { t } = useTranslation();
@@ -269,7 +293,7 @@ function BalanceWithCleared({
           )}
         </TransactionListBalanceCellValue>
       </View>
-      <Balance balance={balance} />
+      <Balance balance={balance} label={balanceLabel} invert={invertBalance} />
       <View
         style={{
           display: !showCleared ? 'none' : undefined,
@@ -303,34 +327,46 @@ function BalanceWithCleared({
 
 type BalanceProps = {
   balance: TransactionListWithBalancesProps['balance'];
+  label?: string;
+  invert?: boolean;
 };
 
-function Balance({ balance }: BalanceProps) {
+function Balance({ balance, label, invert = false }: BalanceProps) {
   const { t } = useTranslation();
   return (
-    <View style={{ flexBasis: '33%' }}>
-      <Label title={t('Balance')} style={{ textAlign: 'center' }} />
+    <View style={{ flexBasis: invert ? '50%' : '33%' }}>
+      <Label title={label ?? t('Balance')} style={{ textAlign: 'center' }} />
       <TransactionListBalanceCellValue binding={balance} type="financial">
-        {props => (
-          <CellValueText
-            {...props}
-            style={{
-              ...styles.tnum,
-              fontFamily: styles.serifFont,
-              fontSize: 26,
-              lineHeight: 1.15,
-              textAlign: 'center',
-              fontWeight: '500',
-              color:
-                props.value < 0
-                  ? theme.numberNegative
-                  : props.value > 0
-                    ? theme.numberPositive
-                    : theme.numberNeutral,
-            }}
-            data-testid="transactions-balance"
-          />
-        )}
+        {props => {
+          // A bill is shown as the amount owed: a calm neutral figure,
+          // red only when the account is somehow in credit.
+          const shown = invert ? -props.value : props.value;
+          const color = invert
+            ? shown < 0
+              ? theme.numberNegative
+              : theme.pageText
+            : shown < 0
+              ? theme.numberNegative
+              : shown > 0
+                ? theme.numberPositive
+                : theme.numberNeutral;
+          return (
+            <CellValueText
+              {...props}
+              value={shown}
+              style={{
+                ...styles.tnum,
+                fontFamily: styles.serifFont,
+                fontSize: 26,
+                lineHeight: 1.15,
+                textAlign: 'center',
+                fontWeight: '500',
+                color,
+              }}
+              data-testid="transactions-balance"
+            />
+          );
+        }}
       </TransactionListBalanceCellValue>
     </View>
   );

@@ -26,6 +26,11 @@ import type { AccountEntity } from '@actual-app/core/types/models';
 import { css } from '@emotion/css';
 
 import { useMoveAccountMutation, useSyncAndDownloadMutation } from '#accounts';
+import {
+  ACCOUNT_TYPE_GROUPS,
+  getAccountTypeGroup,
+  getAccountTypeGroupLabel,
+} from '#accounts/accountTypes';
 import { isAccountFailedSync } from '#accounts/syncStatus';
 import { makeAmountFullStyle } from '#components/budget/util';
 import {
@@ -44,6 +49,8 @@ import { replaceModal } from '#modals/modalsSlice';
 import { useDispatch, useSelector } from '#redux';
 import type { Binding, SheetFields } from '#spreadsheet';
 import * as bindings from '#spreadsheet/bindings';
+
+import { AccountTypeSectionHeader } from './AccountTypeSectionHeader';
 
 const ROW_HEIGHT = 60;
 
@@ -300,8 +307,6 @@ type AllAccountListProps = {
     accountId: AccountEntity['id'],
   ) => Binding<'account', 'balance'>;
   getAllAccountsBalance: () => Binding<'account', 'accounts-balance'>;
-  getOnBudgetBalance: () => Binding<'account', 'onbudget-accounts-balance'>;
-  getOffBudgetBalance: () => Binding<'account', 'offbudget-accounts-balance'>;
   getClosedAccountsBalance: () => Binding<'account', 'closed-accounts-balance'>;
   onAddAccount: () => void;
   onOpenAccount: (account: AccountEntity) => void;
@@ -312,20 +317,19 @@ function AllAccountList({
   accounts,
   getAccountBalance,
   getAllAccountsBalance,
-  getOnBudgetBalance,
-  getOffBudgetBalance,
   getClosedAccountsBalance,
   onAddAccount,
   onOpenAccount,
   onSync,
 }: AllAccountListProps) {
   const { t } = useTranslation();
-  const onBudgetAccounts = accounts.filter(
-    account => account.offbudget === 0 && account.closed === 0,
-  );
-  const offBudgetAccounts = accounts.filter(
-    account => account.offbudget === 1 && account.closed === 0,
-  );
+  const openAccounts = accounts.filter(account => account.closed === 0);
+  const sections = ACCOUNT_TYPE_GROUPS.map(({ group }) => ({
+    group,
+    accounts: openAccounts.filter(
+      account => getAccountTypeGroup(account) === group,
+    ),
+  })).filter(section => section.accounts.length > 0);
   const closedAccounts = accounts.filter(account => account.closed === 1);
 
   const closedAccountsRef = useRef<HTMLDivElement | null>(null);
@@ -382,32 +386,20 @@ function AllAccountList({
               name={t('All accounts')}
               amount={getAllAccountsBalance()}
             />
-            {onBudgetAccounts.length > 0 && (
-              <AccountHeader
-                id="onbudget"
-                name={t('On budget')}
-                amount={getOnBudgetBalance()}
-              />
-            )}
-            <AccountList
-              aria-label={t('On budget accounts')}
-              accounts={onBudgetAccounts}
-              getAccountBalance={getAccountBalance}
-              onOpenAccount={onOpenAccount}
-            />
-            {offBudgetAccounts.length > 0 && (
-              <AccountHeader
-                id="offbudget"
-                name={t('Off budget')}
-                amount={getOffBudgetBalance()}
-              />
-            )}
-            <AccountList
-              aria-label={t('Off budget accounts')}
-              accounts={offBudgetAccounts}
-              getAccountBalance={getAccountBalance}
-              onOpenAccount={onOpenAccount}
-            />
+            {sections.map(section => (
+              <View key={section.group}>
+                <AccountTypeSectionHeader
+                  group={section.group}
+                  accountIds={section.accounts.map(account => account.id)}
+                />
+                <AccountList
+                  aria-label={getAccountTypeGroupLabel(t, section.group)}
+                  accounts={section.accounts}
+                  getAccountBalance={getAccountBalance}
+                  onOpenAccount={onOpenAccount}
+                />
+              </View>
+            ))}
             {closedAccounts.length > 0 && (
               <AccountHeader
                 id="closed"
@@ -604,8 +596,6 @@ export function AccountsPage() {
         accounts={accounts}
         getAccountBalance={bindings.accountBalance}
         getAllAccountsBalance={bindings.allAccountBalance}
-        getOnBudgetBalance={bindings.onBudgetAccountBalance}
-        getOffBudgetBalance={bindings.offBudgetAccountBalance}
         getClosedAccountsBalance={bindings.closedAccountBalance}
         onAddAccount={onAddAccount}
         onOpenAccount={onOpenAccount}

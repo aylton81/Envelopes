@@ -9,12 +9,21 @@ import { FormError } from '@actual-app/components/form-error';
 import { InitialFocus } from '@actual-app/components/initial-focus';
 import { InlineField } from '@actual-app/components/inline-field';
 import { Input } from '@actual-app/components/input';
+import { Menu } from '@actual-app/components/menu';
+import { Select } from '@actual-app/components/select';
 import { Text } from '@actual-app/components/text';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 import { toRelaxedNumber } from '@actual-app/core/shared/util';
+import type { AccountType } from '@actual-app/core/types/models';
 
 import { useCreateAccountMutation } from '#accounts';
+import {
+  ACCOUNT_TYPE_GROUPS,
+  getAccountTypeGroupLabel,
+  getAccountTypeLabel,
+  isOffBudgetByDefault,
+} from '#accounts/accountTypes';
 import { Link } from '#components/common/Link';
 import {
   Modal,
@@ -39,6 +48,20 @@ export function CreateLocalAccountModal() {
   const { data: accounts = [] } = useAccounts();
   const [name, setName] = useState('');
   const [offbudget, setOffbudget] = useState(false);
+  const [type, setType] = useState<AccountType>('checking');
+
+  const typeOptions = ACCOUNT_TYPE_GROUPS.flatMap(({ group, types }) => [
+    [Menu.label, getAccountTypeGroupLabel(t, group)] as const,
+    ...types.map(
+      accountType =>
+        [accountType, getAccountTypeLabel(t, accountType)] as const,
+    ),
+  ]);
+
+  const onChangeType = (newType: AccountType) => {
+    setType(newType);
+    setOffbudget(isOffBudgetByDefault(newType));
+  };
   const [balance, setBalance] = useState('0');
 
   const [nameError, setNameError] = useState(null);
@@ -72,6 +95,7 @@ export function CreateLocalAccountModal() {
           name,
           balance: toRelaxedNumber(balance),
           offBudget: offbudget,
+          type,
         },
         {
           onSuccess: id => {
@@ -140,6 +164,16 @@ export function CreateLocalAccountModal() {
                   {nameError}
                 </FormError>
               )}
+
+              <InlineField label={t('Type')} width="100%">
+                <Select
+                  aria-label={t('Account type')}
+                  options={typeOptions}
+                  value={type}
+                  onChange={onChangeType}
+                  style={{ flex: 1 }}
+                />
+              </InlineField>
 
               <View
                 style={{

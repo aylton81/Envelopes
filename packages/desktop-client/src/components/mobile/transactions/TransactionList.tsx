@@ -47,6 +47,7 @@ import {
 import { useAccounts } from '#hooks/useAccounts';
 import { useCategoriesById } from '#hooks/useCategories';
 import { useLocale } from '#hooks/useLocale';
+import { useLocalPref } from '#hooks/useLocalPref';
 import { useNavigate } from '#hooks/useNavigate';
 import { usePayees } from '#hooks/usePayees';
 import { useScrollListener } from '#hooks/useScrollListener';
@@ -56,6 +57,7 @@ import { useUndo } from '#hooks/useUndo';
 import { setNotificationInset } from '#notifications/notificationsSlice';
 import { useDispatch } from '#redux';
 
+import { ScheduledToggle } from './ScheduledToggle';
 import { ROW_HEIGHT, TransactionListItem } from './TransactionListItem';
 
 const NOTIFICATION_BOTTOM_INSET = 75;
@@ -110,6 +112,18 @@ export function TransactionList({
 }: TransactionListProps) {
   const locale = useLocale();
   const { t } = useTranslation();
+  const [isScheduledCollapsed = false, setScheduledCollapsedPref] =
+    useLocalPref('mobile.scheduledTransactionsCollapsed');
+  const scheduledCount = transactions.filter(
+    transaction => isPreviewId(transaction.id) && !transaction.is_child,
+  ).length;
+  const visibleTransactions = useMemo(
+    () =>
+      isScheduledCollapsed
+        ? transactions.filter(transaction => !isPreviewId(transaction.id))
+        : transactions,
+    [transactions, isScheduledCollapsed],
+  );
   const sections = useMemo(() => {
     // Group by date. We can assume transactions is ordered
     const sections: {
@@ -117,7 +131,7 @@ export function TransactionList({
       date: TransactionEntity['date'];
       transactions: TransactionEntity[];
     }[] = [];
-    transactions.forEach(transaction => {
+    visibleTransactions.forEach(transaction => {
       if (
         sections.length === 0 ||
         transaction.date !== sections[sections.length - 1].date
@@ -132,7 +146,7 @@ export function TransactionList({
       sections[sections.length - 1].transactions.push(transaction);
     });
     return sections;
-  }, [transactions]);
+  }, [visibleTransactions]);
 
   const dispatchSelected = useSelectedDispatch();
   const selectedTransactions = useSelectedItems();
@@ -169,6 +183,13 @@ export function TransactionList({
         <Loading
           style={{ flex: 'none', paddingBottom: 8 }}
           aria-label={t('Loading transactions...')}
+        />
+      )}
+      {scheduledCount > 0 && (
+        <ScheduledToggle
+          count={scheduledCount}
+          isCollapsed={isScheduledCollapsed}
+          onToggle={() => setScheduledCollapsedPref(!isScheduledCollapsed)}
         />
       )}
       <View style={{ flex: 1 }}>

@@ -2,7 +2,10 @@ import type { TransactionEntity } from '@actual-app/core/types/models';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { initServer } from '#mocks/connection';
-import { createSingleTimeScheduleFromTransaction } from '#util/schedule-actions';
+import {
+  createSingleTimeScheduleFromTransaction,
+  nextOccurrence,
+} from '#util/schedule-actions';
 
 vi.mock(
   '@actual-app/core/platform/client/connection',
@@ -72,5 +75,17 @@ describe('createSingleTimeScheduleFromTransaction', () => {
         ),
       }),
     );
+  });
+});
+
+describe('nextOccurrence', () => {
+  it('moves one week, month or year ahead', () => {
+    expect(nextOccurrence('2026-10-31', 'weekly')).toBe('2026-11-07');
+    expect(nextOccurrence('2026-10-15', 'monthly')).toBe('2026-11-15');
+    expect(nextOccurrence('2026-10-15', 'yearly')).toBe('2027-10-15');
+  });
+
+  it('clamps to the end of a shorter month', () => {
+    expect(nextOccurrence('2026-01-31', 'monthly')).toBe('2026-02-28');
   });
 });

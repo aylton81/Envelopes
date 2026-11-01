@@ -22,6 +22,7 @@ import {
   useUpdateAccountMutation,
 } from '#accounts';
 import { markAccountRead } from '#accounts/accountsSlice';
+import { isCreditAccount } from '#accounts/accountTypes';
 import * as reconciliation from '#accounts/reconciliation';
 import { ReconcilingBanner } from '#components/mobile/accounts/ReconcilingBanner';
 import { TransactionListWithBalances } from '#components/mobile/transactions/TransactionListWithBalances';
@@ -42,6 +43,8 @@ import { collapseModals, pushModal } from '#modals/modalsSlice';
 import * as queries from '#queries';
 import { useDispatch } from '#redux';
 import * as bindings from '#spreadsheet/bindings';
+
+import { PayBillButton } from './PayBillButton';
 
 export function AccountTransactions({
   account,
@@ -337,6 +340,11 @@ function TransactionListWithPreviews({
         onRefresh={onRefresh}
         isReconciling={isReconciling}
         onToggleTransactionCleared={onToggleTransactionCleared}
+        {...(isCreditAccount(account) && {
+          balanceLabel: t('Current bill'),
+          invertBalance: true,
+          balanceAction: <PayBillButton account={account} />,
+        })}
       />
     </>
   );

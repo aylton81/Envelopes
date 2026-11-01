@@ -70,6 +70,7 @@ export const schema = {
     name: f('string', { required: true }),
     offbudget: f('boolean'),
     closed: f('boolean'),
+    type: f('string'),
     sort_order: f('float'),
     tombstone: f('boolean'),
     account_id: f('string'),

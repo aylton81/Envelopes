@@ -114,11 +114,15 @@ import { setLastTransaction } from '#transactions/transactionsSlice';
 import { getStatusLabel } from '#util/schedule';
 import {
   calculateFutureTransactionInfo,
+  createRecurringScheduleFromTransaction,
   createSingleTimeScheduleFromTransaction,
   isFutureTransaction,
 } from '#util/schedule-actions';
+import type { RepeatFrequency } from '#util/schedule-actions';
 
 import { AmountInput } from './AmountInput';
+import { RepeatField } from './RepeatField';
+import type { RepeatChoice } from './RepeatField';
 import { SplitAmountInput } from './SplitAmountInput';
 
 function getFieldName(transactionId: TransactionEntity['id'], field: string) {
@@ -667,6 +671,7 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
     const { data: { grouped: categoryGroups } = { grouped: [] } } =
       useCategories();
     const noteRef = useRef<HTMLInputElement | null>(null);
+    const [repeat, setRepeat] = useState<RepeatChoice>('never');
 
     useEffect(() => {
       if (window.history.length === 1) {
@@ -736,6 +741,40 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
       [categories, isBudgetTransfer, t],
     );
 
+    const scheduleRepeat = useCallback(
+      async (saved: TransactionEntity[], frequency: RepeatFrequency) => {
+        const parent = saved.find(t => !t.is_child);
+        if (!parent?.account) {
+          return;
+        }
+        const withSplits = parent.is_parent
+          ? {
+              ...parent,
+              subtransactions: saved.filter(
+                t => t.is_child && t.parent_id === parent.id,
+              ),
+            }
+          : parent;
+        try {
+          await createRecurringScheduleFromTransaction(
+            withSplits,
+            frequency,
+            parent.payee ? payeesById?.[parent.payee]?.name : undefined,
+          );
+        } catch {
+          dispatch(
+            addNotification({
+              notification: {
+                type: 'error',
+                message: t('Failed to create schedule'),
+              },
+            }),
+          );
+        }
+      },
+      [dispatch, payeesById, t],
+    );
+
     const onSaveInner = useCallback(async () => {
       const onConfirmSave = () => {
         let transactionsToSave = unserializedTransactions;
@@ -746,6 +785,11 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
         }
 
         onSave(transactionsToSave);
+
+        if (isAdding && repeat !== 'never') {
+          void scheduleRepeat(transactionsToSave, repeat);
+        }
+
         void navigate(-1);
       };
 
@@ -798,7 +842,15 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
           onConfirmSave();
         }
       }
-    }, [isAdding, dispatch, navigate, onSave, unserializedTransactions]);
+    }, [
+      isAdding,
+      dispatch,
+      navigate,
+      onSave,
+      repeat,
+      scheduleRepeat,
+      unserializedTransactions,
+    ]);
 
     const onSchedule = useCallback(async () => {
       const [unserializedTransaction] = unserializedTransactions;
@@ -1549,6 +1601,13 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
             <NoteTagAutocomplete inputRef={noteRef} />
           </View>
 
+          {isAdding && !isFuture && (
+            <View>
+              <FieldLabel title={t('Repeat')} />
+              <RepeatField value={repeat} onChange={setRepeat} />
+            </View>
+          )}
+
           {!isAdding && (
             <View style={{ alignItems: 'center' }}>
               <Button
@@ -1704,16 +1763,19 @@ function TransactionEditUnconnected({
             }
             return lastTransaction?.date || monthUtils.currentDay();
           })(),
-          payee: searchParamPayee,
+          payee: searchParamPayee || locationState?.payeeId,
           account:
             searchParamAccount ||
             locationState?.accountId ||
             lastTransaction?.account ||
             null,
           category: searchParamCategory || locationState?.categoryId || null,
-          amount: -amountToInteger(
-            parseFloat(searchParams.get('amount') || '') || 0,
-          ),
+          amount:
+            typeof locationState?.amount === 'number'
+              ? locationState.amount
+              : -amountToInteger(
+                  parseFloat(searchParams.get('amount') || '') || 0,
+                ),
           cleared: searchParams.get('cleared') === 'true',
           notes: searchParams.get('notes') || '',
         },
@@ -1721,7 +1783,9 @@ function TransactionEditUnconnected({
     }
   }, [
     locationState?.accountId,
+    locationState?.amount,
     locationState?.categoryId,
+    locationState?.payeeId,
     lastTransaction,
     searchParamAccount,
     searchParamCategory,
