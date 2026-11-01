@@ -221,8 +221,8 @@
   --color-errorTextDarker: var(--color-errorTextDark);
   --color-errorTextMenu: var(--palette-red200);
   --color-errorBorder: var(--palette-red500);
-  --color-upcomingBackground: var(--palette-clay700);
-  --color-upcomingText: var(--palette-clay100);
+  --color-upcomingBackground: var(--palette-warm700);
+  --color-upcomingText: var(--palette-warm100);
   --color-upcomingBorder: var(--color-tableBorder);
 
   --color-formLabelText: var(--palette-clay150);

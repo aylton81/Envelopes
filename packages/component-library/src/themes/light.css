@@ -196,7 +196,7 @@
   --color-noticeTextDark: var(--palette-green900);
   --color-noticeTextMenu: var(--palette-green200);
   --color-noticeBorder: var(--palette-green500);
-  --color-warningBackground: var(--palette-orange200);
+  --color-warningBackground: color-mix(in srgb, var(--palette-orange500) 20%, var(--palette-warm50));
   --color-warningText: var(--palette-orange700);
   --color-warningTextLight: var(--palette-orange500);
   --color-warningTextDark: var(--palette-orange900);
@@ -211,9 +211,9 @@
   --color-errorTextDarker: var(--palette-red900);
   --color-errorTextMenu: var(--palette-red200);
   --color-errorBorder: var(--palette-red500);
-  --color-upcomingBackground: var(--palette-clay100);
-  --color-upcomingText: var(--palette-clay700);
-  --color-upcomingBorder: var(--palette-clay500);
+  --color-upcomingBackground: var(--palette-warm125);
+  --color-upcomingText: var(--palette-warm800);
+  --color-upcomingBorder: var(--palette-warm400);
 
   --color-formLabelText: var(--palette-warm600);
   --color-formLabelBackground: var(--palette-warm125);

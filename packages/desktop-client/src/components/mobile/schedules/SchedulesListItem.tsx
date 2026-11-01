@@ -79,7 +79,7 @@ export function SchedulesListItem({
           <Text
             size="large"
             style={{
-              fontWeight: 600,
+              fontWeight: 500,
               color: schedule.name
                 ? theme.pageText
                 : theme.buttonNormalDisabledText,
