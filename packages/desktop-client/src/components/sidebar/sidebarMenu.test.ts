@@ -139,7 +139,7 @@ describe('moveSidebarMenuItem', () => {
 
 describe('isInMobileSettingsNav', () => {
   it('leaves schedules and tags out of the mobile settings menu', () => {
-    expect(isInMobileSettingsNav('schedules')).toBe(false);
+    expect(isInMobileSettingsNav('schedules')).toBe(true);
     expect(isInMobileSettingsNav('tags')).toBe(false);
     expect(isInMobileSettingsNav('payees')).toBe(true);
     expect(isInMobileSettingsNav('bank-sync')).toBe(true);

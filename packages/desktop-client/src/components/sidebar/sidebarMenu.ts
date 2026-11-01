@@ -35,8 +35,10 @@ export function isSidebarMenuItemLocked(id: SidebarMenuItemId): boolean {
   return !isSettingsSection(id);
 }
 
-export function isSettingsSectionOnMobile(id: SettingsSectionId): boolean {
-  return id !== 'schedules';
+export function isSettingsSectionOnMobile(_id: SettingsSectionId): boolean {
+  // Schedules left the mobile tab bar, so Settings is now its home on
+  // phones as well.
+  return true;
 }
 
 export function isInMobileSettingsNav(id: SettingsSectionId): boolean {

@@ -3,6 +3,7 @@ import type { Locator, Page } from '@playwright/test';
 type SettingsSection =
   | 'General'
   | 'Payees'
+  | 'Schedules'
   | 'Rules'
   | 'Bank Sync'
   | 'Tags'

@@ -28,7 +28,11 @@ import { css } from '@emotion/css';
 import { useMoveAccountMutation, useSyncAndDownloadMutation } from '#accounts';
 import { isAccountFailedSync } from '#accounts/syncStatus';
 import { makeAmountFullStyle } from '#components/budget/util';
-import { MOBILE_NAV_HEIGHT } from '#components/mobile/MobileNavTabs';
+import {
+  MOBILE_FAB_CLEARANCE,
+  MOBILE_NAV_HEIGHT,
+} from '#components/mobile/MobileNavTabs';
+import { MobileOverflowMenu } from '#components/mobile/MobileOverflowMenu';
 import { PullToRefresh } from '#components/mobile/PullToRefresh';
 import { MobilePageHeader, Page } from '#components/Page';
 import { CellValue, CellValueText } from '#components/spreadsheet/CellValue';
@@ -349,14 +353,17 @@ function AllAccountList({
         <MobilePageHeader
           title={t('Accounts')}
           rightContent={
-            <Button
-              variant="bare"
-              aria-label={t('Add account')}
-              style={{ margin: 10 }}
-              onPress={onAddAccount}
-            >
-              <SvgAdd width={20} height={20} />
-            </Button>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Button
+                variant="bare"
+                aria-label={t('Add account')}
+                style={{ margin: '10px 4px' }}
+                onPress={onAddAccount}
+              >
+                <SvgAdd width={20} height={20} />
+              </Button>
+              <MobileOverflowMenu />
+            </View>
           }
         />
       }
@@ -368,7 +375,7 @@ function AllAccountList({
         <PullToRefresh onRefresh={onSync}>
           <View
             aria-label={t('Account list')}
-            style={{ paddingBottom: MOBILE_NAV_HEIGHT }}
+            style={{ paddingBottom: MOBILE_NAV_HEIGHT + MOBILE_FAB_CLEARANCE }}
           >
             <AccountHeader
               id={ALL_ACCOUNTS_ID}

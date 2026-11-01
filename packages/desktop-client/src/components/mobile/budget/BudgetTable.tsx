@@ -21,7 +21,10 @@ import { AutoTextSize } from 'auto-text-size';
 
 import { BalanceChipLegend } from '#components/budget/BalanceChipLegend';
 import { HelpHint } from '#components/common/HelpHint';
-import { MOBILE_NAV_HEIGHT } from '#components/mobile/MobileNavTabs';
+import {
+  MOBILE_FAB_CLEARANCE,
+  MOBILE_NAV_HEIGHT,
+} from '#components/mobile/MobileNavTabs';
 import { PullToRefresh } from '#components/mobile/PullToRefresh';
 import { PrivacyFilter } from '#components/PrivacyFilter';
 import { CellValue } from '#components/spreadsheet/CellValue';
@@ -131,7 +134,7 @@ type ToBudgetProps = {
   onPress: () => void;
 };
 
-function ToBudget({ toBudget, onPress }: ToBudgetProps) {
+export function ToBudget({ toBudget, onPress }: ToBudgetProps) {
   const { t } = useTranslation();
   const amount = useSheetValue(toBudget) ?? 0;
   const format = useFormat();
@@ -151,7 +154,7 @@ type SavedProps = {
   onPress: () => void;
 };
 
-function Saved({ projected, onPress }: SavedProps) {
+export function Saved({ projected, onPress }: SavedProps) {
   const { t } = useTranslation();
   const binding = projected
     ? trackingBudget.totalBudgetedSaved
@@ -330,7 +333,7 @@ export function BudgetTable({
           style={{
             backgroundColor: theme.pageBackground,
             minHeight: '100vh',
-            paddingBottom: MOBILE_NAV_HEIGHT,
+            paddingBottom: MOBILE_NAV_HEIGHT + MOBILE_FAB_CLEARANCE,
           }}
         >
           <SchedulesProvider query={schedulesQuery}>

@@ -1,4 +1,3 @@
-import { expect } from '@playwright/test';
 import type { Locator, Page } from '@playwright/test';
 
 import { MobileAccountPage } from './mobile-account-page';
@@ -12,14 +11,16 @@ import { MobileSchedulesPage } from './mobile-schedules-page';
 import { MobileTransactionEntryPage } from './mobile-transaction-entry-page';
 import { SettingsPage } from './settings-page';
 
-const NAVBAR_ROWS = 2;
-const NAV_LINKS_HIDDEN_BY_DEFAULT = ['Reports', 'Schedules', 'Settings'];
+// Pages reached directly from the fixed bottom tab bar.
+const TAB_LINKS = ['Budget', 'Accounts', 'Reports', 'Transactions', 'Home'];
 const ROUTES_BY_PAGE = {
+  Home: '/home',
   Budget: '/budget',
+  Transactions: '/transactions',
   Accounts: '/accounts',
   Transaction: '/transactions/new',
   Reports: '/reports',
-  Schedules: '/schedules',
+  Schedules: '/settings/schedules',
   Settings: '/settings',
 };
 
@@ -27,75 +28,11 @@ export class MobileNavigation {
   readonly page: Page;
   readonly heading: Locator;
   readonly navbar: Locator;
-  readonly mainContentSelector: string;
-  readonly navbarSelector: string;
 
   constructor(page: Page) {
     this.page = page;
     this.heading = page.getByRole('heading');
     this.navbar = page.locator('[data-navbar-state]');
-    this.mainContentSelector = '[role=main]';
-    this.navbarSelector = '[data-navbar-state]';
-  }
-
-  async dragNavbarUp() {
-    const mainContentBoundingBox = await this.page
-      .locator(this.mainContentSelector)
-      .boundingBox();
-
-    if (!mainContentBoundingBox) {
-      throw new Error('Unable to get bounding box of main content.');
-    }
-
-    const navbarBoundingBox = await this.page
-      .locator(this.navbarSelector)
-      .boundingBox();
-
-    if (!navbarBoundingBox) {
-      throw new Error('Unable to get bounding box of navbar.');
-    }
-
-    await this.page.dragAndDrop(this.navbarSelector, this.mainContentSelector, {
-      sourcePosition: { x: 1, y: 0 },
-      targetPosition: {
-        x: 1,
-        y: mainContentBoundingBox.height - navbarBoundingBox.height,
-      },
-    });
-  }
-
-  async dragNavbarDown() {
-    const boundingBox = await this.page
-      .locator(this.navbarSelector)
-      .boundingBox();
-
-    if (!boundingBox) {
-      throw new Error('Unable to get bounding box of navbar.');
-    }
-
-    await this.page.dragAndDrop(this.navbarSelector, this.navbarSelector, {
-      sourcePosition: { x: 1, y: 0 },
-      targetPosition: {
-        x: 1,
-        // Only scroll until bottom of screen i.e. bottom of first navbar row.
-        y: boundingBox.height / NAVBAR_ROWS,
-      },
-    });
-
-    await expect(this.navbar).not.toHaveAttribute('data-navbar-state', 'open');
-  }
-
-  async hasNavbarState(...states: string[]) {
-    if ((await this.navbar.count()) === 0) {
-      // No navbar on page.
-      return false;
-    }
-
-    const dataNavbarState = await this.navbar.getAttribute('data-navbar-state');
-    if (!dataNavbarState) {
-      throw new Error('Navbar does not have data-navbar-state attribute.');
-    }
-    return states.includes(dataNavbarState);
   }
 
   async navigateToPage<T extends { waitFor: Locator['waitFor'] }>(
@@ -109,28 +46,36 @@ export class MobileNavigation {
       return pageInstance;
     }
 
-    await this.navbar.waitFor();
-
-    const navbarStates = NAV_LINKS_HIDDEN_BY_DEFAULT.includes(pageName)
-      ? ['default', 'hidden']
-      : ['hidden'];
-
-    if (await this.hasNavbarState(...navbarStates)) {
-      await this.dragNavbarUp();
+    if (TAB_LINKS.includes(pageName)) {
+      await this.navbar.getByRole('link', { name: pageName }).click();
+    } else if (pageName === 'Transaction') {
+      const addButton = this.page.getByRole('button', {
+        name: 'Add transaction',
+      });
+      if (!(await addButton.isVisible())) {
+        await this.navbar.getByRole('link', { name: 'Budget' }).click();
+      }
+      await addButton.click();
+    } else if (pageName === 'Settings') {
+      await this.openSettingsFromOverflowMenu();
+    } else {
+      throw new Error(`No navigation path to ${pageName}`);
     }
-
-    const link = this.navbar.getByRole('link', { name: pageName });
-    // Click via evaluate: the navbar uses react-spring transforms, so
-    // Playwright's viewport-stability check rejects mid-animation clicks.
-    await link.evaluate(el => (el as HTMLElement).click());
 
     await pageInstance.waitFor();
-
-    if (await this.hasNavbarState('open')) {
-      await this.dragNavbarDown();
-    }
-
     return pageInstance;
+  }
+
+  async openSettingsFromOverflowMenu() {
+    if (
+      !(await this.page
+        .getByRole('button', { name: 'More options' })
+        .isVisible())
+    ) {
+      await this.navbar.getByRole('link', { name: 'Budget' }).click();
+    }
+    await this.page.getByRole('button', { name: 'More options' }).click();
+    await this.page.getByRole('button', { name: 'Settings' }).click();
   }
 
   async goToBudgetPage() {
@@ -178,10 +123,12 @@ export class MobileNavigation {
   }
 
   async goToSchedulesPage() {
-    return this.navigateToPage(
-      'Schedules',
-      () => new MobileSchedulesPage(this.page),
-    );
+    const settingsPage = await this.goToSettingsPage();
+    await settingsPage.goToSection('Schedules');
+
+    const schedulesPage = new MobileSchedulesPage(this.page);
+    await schedulesPage.waitFor();
+    return schedulesPage;
   }
 
   async goToRulesPage() {

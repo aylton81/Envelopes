@@ -40,6 +40,10 @@ import type {
 } from '@actual-app/core/types/models';
 
 import { FloatingActionBar } from '#components/mobile/FloatingActionBar';
+import {
+  MOBILE_FAB_CLEARANCE,
+  MOBILE_NAV_HEIGHT,
+} from '#components/mobile/MobileNavTabs';
 import { useAccounts } from '#hooks/useAccounts';
 import { useCategoriesById } from '#hooks/useCategories';
 import { useLocale } from '#hooks/useLocale';
@@ -180,7 +184,12 @@ export function TransactionList({
             selectionMode={
               selectedTransactions.size > 0 ? 'multiple' : 'single'
             }
-            style={{ flex: 1, overflow: 'auto' }}
+            style={{
+              flex: 1,
+              overflow: 'auto',
+              // Room for the tab bar and the floating add button.
+              paddingBottom: MOBILE_NAV_HEIGHT + MOBILE_FAB_CLEARANCE,
+            }}
             selectedKeys={selectedTransactions}
             dependencies={[
               selectedTransactions,
